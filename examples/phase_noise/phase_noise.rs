@@ -5,8 +5,8 @@ use rand::Rng;
 use std::f64::consts::PI;
 
 fn main() {
-    let sf = 48000; // sample rate
-    let f = 2; // frequency
+    const SF: usize = 48000; // sample rate
+    const F: f64 = 2.0; // frequency
     let t = 1; // time
     let mut rng = rand::thread_rng();
 
@@ -18,13 +18,9 @@ fn main() {
     let mut old_atan2 = 0.0;
     let mut wrap = 0.0;
 
-    for k in 0..sf * t {
-        left.push(
-            (k as f64 * 2.0 * PI * f as f64 / sf as f64).sin() + (rng.gen::<f64>() - 0.5) * 0.50,
-        );
-        right.push(
-            (k as f64 * 2.0 * PI * f as f64 / sf as f64).cos() + (rng.gen::<f64>() - 0.5) * 0.50,
-        );
+    for k in 0..SF * t {
+        left.push((k as f64 * 2.0 * PI * F / SF as f64).sin() + (rng.gen::<f64>() - 0.5) * 0.50);
+        right.push((k as f64 * 2.0 * PI * F / SF as f64).cos() + (rng.gen::<f64>() - 0.5) * 0.50);
 
         let new_atan2 = libm::atan2(left[k], right[k]);
         wrapped.push(new_atan2);
@@ -46,15 +42,15 @@ fn main() {
         .set_label_area_size(LabelAreaPosition::Left, 40)
         .set_label_area_size(LabelAreaPosition::Bottom, 40)
         .caption("left right", ("sans-serif", 40))
-        .build_cartesian_2d(0..sf, -2.0..2.0)
+        .build_cartesian_2d(0..SF, -2.0..2.0)
         .unwrap();
 
     ctx.configure_mesh().draw().unwrap();
 
-    ctx.draw_series(LineSeries::new((0..sf).map(|x| (x, left[x])), &BLUE))
+    ctx.draw_series(LineSeries::new((0..SF).map(|x| (x, left[x])), &BLUE))
         .unwrap();
 
-    ctx.draw_series(LineSeries::new((0..sf).map(|x| (x, right[x])), &RED))
+    ctx.draw_series(LineSeries::new((0..SF).map(|x| (x, right[x])), &RED))
         .unwrap();
 
     // plot atan2
@@ -66,12 +62,12 @@ fn main() {
         .set_label_area_size(LabelAreaPosition::Left, 40)
         .set_label_area_size(LabelAreaPosition::Bottom, 40)
         .caption("atan2", ("sans-serif", 40))
-        .build_cartesian_2d(0..sf, -PI..PI)
+        .build_cartesian_2d(0..SF, -PI..PI)
         .unwrap();
 
     ctx.configure_mesh().draw().unwrap();
 
-    ctx.draw_series(LineSeries::new((0..sf).map(|x| (x, wrapped[x])), &RED))
+    ctx.draw_series(LineSeries::new((0..SF).map(|x| (x, wrapped[x])), &RED))
         .unwrap();
 
     // plot unwrapped
@@ -84,7 +80,7 @@ fn main() {
         .set_label_area_size(LabelAreaPosition::Bottom, 40)
         .caption("unwrapped", ("sans-serif", 40))
         .build_cartesian_2d(
-            0..sf,
+            0..SF,
             -PI..(unwrapped
                 .clone()
                 .into_iter()
@@ -94,9 +90,9 @@ fn main() {
 
     ctx.configure_mesh().draw().unwrap();
 
-    ctx.draw_series(LineSeries::new((0..sf).map(|x| (x, unwrapped[x])), &RED))
+    ctx.draw_series(LineSeries::new((0..SF).map(|x| (x, unwrapped[x])), &RED))
         .unwrap();
 
-    ctx.draw_series(LineSeries::new((0..sf).map(|x| (x, wrapped[x])), &BLUE))
+    ctx.draw_series(LineSeries::new((0..SF).map(|x| (x, wrapped[x])), &BLUE))
         .unwrap();
 }
