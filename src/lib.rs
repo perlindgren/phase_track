@@ -15,33 +15,17 @@ pub fn read_file(path: &str) -> Result<Vec<f64>, Box<dyn Error>> {
     Ok(result?)
 }
 
-#[cfg(test)]
-mod test {
-    use csv::Reader;
-    use std::error::Error;
+pub fn quality(rust: Vec<f64>, path: &str) {
+    let octave = read_file(path).unwrap();
+    assert_eq!(rust.len(), octave.len());
 
-    #[test]
-    fn example() -> Result<(), Box<dyn Error>> {
-        let mut rdr = Reader::from_path("octave/data.csv")?;
-        for result in rdr.records() {
-            let record = result?;
-            println!("{:?}", record);
-        }
-        Ok(())
-    }
+    let (acc, mse) = octave
+        .iter()
+        .zip(rust.iter())
+        .fold((0.0, 0.0), |(acc, mse), (r, w)| {
+            (acc + (r - w).abs(), mse + (r - w).powi(2))
+        });
 
-    #[test]
-    fn example2() {
-        let mut rdr = csv::ReaderBuilder::new()
-            .has_headers(false)
-            .from_path("octave/data.csv")
-            .unwrap();
-
-        let mut v = vec![];
-        for result in rdr.deserialize() {
-            let record: Vec<f64> = result.unwrap();
-            v = record
-        }
-        println!("v {:?}", v);
-    }
+    println!("accumulated error {}", acc);
+    println!("min square error  {}", mse / rust.len() as f64);
 }
