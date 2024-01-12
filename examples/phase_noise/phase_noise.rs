@@ -7,7 +7,8 @@ use std::f64::consts::PI;
 fn main() {
     const SF: usize = 48000; // sample rate
     const F: f64 = 2.0; // frequency
-    let t = 1; // time
+    const T: usize = 1; // time
+
     let mut rng = rand::thread_rng();
 
     let mut left = vec![];
@@ -18,7 +19,7 @@ fn main() {
     let mut old_atan2 = 0.0;
     let mut wrap = 0.0;
 
-    for k in 0..SF * t {
+    for k in 0..SF * T {
         left.push((k as f64 * 2.0 * PI * F / SF as f64).sin() + (rng.gen::<f64>() - 0.5) * 0.50);
         right.push((k as f64 * 2.0 * PI * F / SF as f64).cos() + (rng.gen::<f64>() - 0.5) * 0.50);
 
