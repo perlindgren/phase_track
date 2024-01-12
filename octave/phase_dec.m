@@ -50,3 +50,5 @@ clf
 hold on
 plot(wrapped)
 grid on
+
+csvwrite('phase_dec.csv', unwrapped);

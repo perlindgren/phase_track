@@ -95,4 +95,13 @@ fn main() {
 
     ctx.draw_series(LineSeries::new((0..SF).map(|x| (x, wrapped[x])), &BLUE))
         .unwrap();
+
+    let octave = phase::read_file("octave/phase_dec.csv").unwrap();
+
+    let acc = octave
+        .iter()
+        .zip(unwrapped.iter())
+        .fold(0.0, |acc, (o, w)| acc + (*o - *w).abs());
+
+    println!("accumulated error {}", acc);
 }

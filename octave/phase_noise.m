@@ -12,8 +12,8 @@ old_atan2 = 0;
 wrap = 0;
 
 for k = 1 + t_in
-    left(k) = sin(k * 2 * pi * F / SF) + (rand() - 0.5) * 0.50;
-    right(k) = cos(k * 2 * pi * F / SF) + (rand() - 0.5) * 0.50;
+    left(k) = sin(k * 2 * pi * F / SF) + (rand() - 0.5) * 0.5;
+    right(k) = cos(k * 2 * pi * F / SF) + (rand() - 0.5) * 0.5;
 
     new_atan2 = atan2(left(k), right(k));
     wrapped(k) = new_atan2;
