@@ -6,39 +6,29 @@ T = 1; % time
 
 t_in = 0:SF * T;
 
-dir = true;
-
-old_angle = 0;
+old_atan2 = 0;
 wrap = 0;
 freq = 5.0;
-delta = freq / 48000;
+delta = freq / SF;
 
 for k = 1 + t_in
-    s(k) = sin((k * freq) * 2 * pi / SF);
-    c(k) = cos((k * freq) * 2 * pi / SF);
+    left(k) = sin((k -1) * freq * 2 * pi / SF);
+    right(k) = cos((k -1) * freq * 2 * pi / SF);
 
     freq -= delta;
 
-    if dir
-        left(k) = s(k);
-        right(k) = c(k);
-    else
-        left(k) = c(k);
-        right(k) = s(k);
-    end
+    new_atan2 = atan2(left(k), right(k));
 
-    angle = atan2(left(k), right(k));
+    wrapped(k) = new_atan2;
 
-    pos(k) = angle;
-
-    if angle - old_angle > pi
+    if new_atan2 - old_atan2 > pi
         wrap -= 1
-    elseif old_angle - angle > pi
+    elseif old_atan2 - new_atan2 > pi
         wrap += 1
     end
 
-    old_angle = angle;
-    p(k) = SF * (wrap + angle / (2 * pi));
+    old_atan2 = new_atan2;
+    unwrapped(k) = wrap * 2 * pi + new_atan2;
 end
 
 figure(1)
@@ -51,12 +41,12 @@ grid on
 figure(2)
 clf
 hold on
-plot(p)
-plot(pos * 48000 / (2 * pi))
+plot(unwrapped)
+plot(wrapped)
 grid on
 
 figure(3)
 clf
 hold on
-plot(pos)
+plot(wrapped)
 grid on
