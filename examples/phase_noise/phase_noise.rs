@@ -1,11 +1,14 @@
 // phase
 
 use plotters::prelude::*;
+use rand::Rng;
 use std::f64::consts::PI;
 
 fn main() {
     let sf = 48000; // sample rate
+    let f = 2; // frequency
     let t = 1; // time
+    let mut rng = rand::thread_rng();
 
     let mut left = vec![];
     let mut right = vec![];
@@ -18,8 +21,14 @@ fn main() {
     let delta = freq / sf as f64;
 
     for k in 0..sf * t {
-        left.push((k as f64 * freq * 2.0 * PI / sf as f64).sin());
-        right.push((k as f64 * freq * 2.0 * PI / sf as f64).cos());
+        left.push(
+            (k as f64 * freq * 2.0 * PI * f as f64 / sf as f64).sin()
+                + (rng.gen::<f64>() - 0.5) * 0.50,
+        );
+        right.push(
+            (k as f64 * freq * 2.0 * PI * f as f64 / sf as f64).cos()
+                + (rng.gen::<f64>() - 0.5) * 0.50,
+        );
 
         freq -= delta;
 
@@ -36,14 +45,14 @@ fn main() {
 
     // plot left, right
     let root_area =
-        SVGBackend::new("examples/phase_dec/left_right.svg", (600, 400)).into_drawing_area();
+        SVGBackend::new("examples/phase_noise/left_right.svg", (600, 400)).into_drawing_area();
     root_area.fill(&WHITE).unwrap();
 
     let mut ctx = ChartBuilder::on(&root_area)
         .set_label_area_size(LabelAreaPosition::Left, 40)
         .set_label_area_size(LabelAreaPosition::Bottom, 40)
         .caption("left right", ("sans-serif", 40))
-        .build_cartesian_2d(0..sf, -1.0..1.0)
+        .build_cartesian_2d(0..sf, -2.0..2.0)
         .unwrap();
 
     ctx.configure_mesh().draw().unwrap();
@@ -55,7 +64,8 @@ fn main() {
         .unwrap();
 
     // plot atan2
-    let root_area = SVGBackend::new("examples/phase_dec/atan2.svg", (600, 400)).into_drawing_area();
+    let root_area =
+        SVGBackend::new("examples/phase_noise/atan2.svg", (600, 400)).into_drawing_area();
     root_area.fill(&WHITE).unwrap();
 
     let mut ctx = ChartBuilder::on(&root_area)
@@ -72,7 +82,7 @@ fn main() {
 
     // plot unwrapped
     let root_area =
-        SVGBackend::new("examples/phase_dec/unwrapped.svg", (600, 400)).into_drawing_area();
+        SVGBackend::new("examples/phase_noise/unwrapped.svg", (600, 400)).into_drawing_area();
     root_area.fill(&WHITE).unwrap();
 
     let mut ctx = ChartBuilder::on(&root_area)
