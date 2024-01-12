@@ -14,16 +14,16 @@ wrap = 0;
 
 for k = 1 + t_in
 
-    atan2 = atan2(left(k), right(k));
+    new_atan2 = atan2(left(k), right(k));
 
-    pos(k) = atan2;
+    wrapped(k) = new_atan2;
 
-    if old_atan2 - atan2 > pi
+    if old_atan2 - new_atan2 > pi
         wrap += 1
     end
 
-    old_atan2 = atan2;
-    p(k) = SF * (wrap + atan2 / (2 * pi));
+    old_atan2 = new_atan2;
+    unwrapped(k) = wrap * 2 * pi + new_atan2;
 end
 
 figure(1)
@@ -36,12 +36,12 @@ grid on
 figure(2)
 clf
 hold on
-plot(pos * 48000 / (2 * pi))
-plot(p)
+plot(wrapped)
+plot(unwrapped)
 grid on
 
 figure(3)
 clf
 hold on
-plot(pos)
+plot(wrapped)
 grid on
