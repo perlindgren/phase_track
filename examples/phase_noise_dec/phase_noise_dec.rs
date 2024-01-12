@@ -6,7 +6,6 @@ use std::f64::consts::PI;
 
 fn main() {
     let sf = 48000; // sample rate
-    let f = 2; // frequency
     let t = 1; // time
     let mut rng = rand::thread_rng();
 
@@ -17,14 +16,15 @@ fn main() {
 
     let mut old_atan2 = 0.0;
     let mut wrap = 0.0;
+    let mut freq = 5.0;
+    let delta = freq / sf as f64;
 
     for k in 0..sf * t {
-        left.push(
-            (k as f64 * 2.0 * PI * f as f64 / sf as f64).sin() + (rng.gen::<f64>() - 0.5) * 0.50,
-        );
-        right.push(
-            (k as f64 * 2.0 * PI * f as f64 / sf as f64).cos() + (rng.gen::<f64>() - 0.5) * 0.50,
-        );
+        left.push((k as f64 * freq * 2.0 * PI / sf as f64).sin() + (rng.gen::<f64>() - 0.5) * 0.50);
+        right
+            .push((k as f64 * freq * 2.0 * PI / sf as f64).cos() + (rng.gen::<f64>() - 0.5) * 0.50);
+
+        freq -= delta;
 
         let new_atan2 = libm::atan2(left[k], right[k]);
         wrapped.push(new_atan2);
@@ -39,7 +39,7 @@ fn main() {
 
     // plot left, right
     let root_area =
-        SVGBackend::new("examples/phase_noise/left_right.svg", (600, 400)).into_drawing_area();
+        SVGBackend::new("examples/phase_noise_dec/left_right.svg", (600, 400)).into_drawing_area();
     root_area.fill(&WHITE).unwrap();
 
     let mut ctx = ChartBuilder::on(&root_area)
@@ -59,7 +59,7 @@ fn main() {
 
     // plot atan2
     let root_area =
-        SVGBackend::new("examples/phase_noise/atan2.svg", (600, 400)).into_drawing_area();
+        SVGBackend::new("examples/phase_noise_dec/atan2.svg", (600, 400)).into_drawing_area();
     root_area.fill(&WHITE).unwrap();
 
     let mut ctx = ChartBuilder::on(&root_area)
@@ -76,7 +76,7 @@ fn main() {
 
     // plot unwrapped
     let root_area =
-        SVGBackend::new("examples/phase_noise/unwrapped.svg", (600, 400)).into_drawing_area();
+        SVGBackend::new("examples/phase_noise_dec/unwrapped.svg", (600, 400)).into_drawing_area();
     root_area.fill(&WHITE).unwrap();
 
     let mut ctx = ChartBuilder::on(&root_area)
