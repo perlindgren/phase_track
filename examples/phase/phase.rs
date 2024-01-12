@@ -10,7 +10,7 @@ fn main() {
 
     let mut left = vec![];
     let mut right = vec![];
-    let mut atan2 = vec![];
+    let mut wrapped = vec![];
     let mut unwrapped = vec![];
 
     let mut old_atan2 = 0.0;
@@ -21,12 +21,12 @@ fn main() {
         right.push((k as f64 * 2.0 * PI * f as f64 / sf as f64).cos());
 
         let new_atan2 = libm::atan2(left[k], right[k]);
-        atan2.push(new_atan2);
+        wrapped.push(new_atan2);
         if old_atan2 - new_atan2 > PI {
             wrap += 1.0;
         }
         old_atan2 = new_atan2;
-        unwrapped.push(sf as f64 * (wrap + new_atan2 / (2.0 * PI)));
+        unwrapped.push(wrap * 2.0 * PI + new_atan2);
     }
 
     // plot left, right
@@ -62,7 +62,7 @@ fn main() {
 
     ctx.configure_mesh().draw().unwrap();
 
-    ctx.draw_series(LineSeries::new((0..sf).map(|x| (x, atan2[x])), &RED))
+    ctx.draw_series(LineSeries::new((0..sf).map(|x| (x, wrapped[x])), &RED))
         .unwrap();
 
     // plot unwrapped
@@ -75,11 +75,10 @@ fn main() {
         .caption("unwrapped", ("sans-serif", 40))
         .build_cartesian_2d(
             0..sf,
-            -(sf as f64) / 2.0
-                ..(unwrapped
-                    .clone()
-                    .into_iter()
-                    .fold(f64::NEG_INFINITY, f64::max)),
+            -PI..(unwrapped
+                .clone()
+                .into_iter()
+                .fold(f64::NEG_INFINITY, f64::max)),
         )
         .unwrap();
 
@@ -88,9 +87,6 @@ fn main() {
     ctx.draw_series(LineSeries::new((0..sf).map(|x| (x, unwrapped[x])), &RED))
         .unwrap();
 
-    ctx.draw_series(LineSeries::new(
-        (0..sf).map(|x| (x, sf as f64 * atan2[x] / (2.0 * PI))),
-        &BLUE,
-    ))
-    .unwrap();
+    ctx.draw_series(LineSeries::new((0..sf).map(|x| (x, wrapped[x])), &BLUE))
+        .unwrap();
 }
