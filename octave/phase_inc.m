@@ -6,13 +6,16 @@ T = 1; % time
 
 t_in = 0:SF * T;
 
-left = sin(t_in * 2 * pi * F / SF);
-right = cos(t_in * 2 * pi * F / SF);
-
 old_atan2 = 0;
 wrap = 0;
+inc = 1.0;
 
 for k = 1 + t_in
+    left(k) = sin((k * inc) * 2 * pi * F / SF);
+    right(k) = cos((k * inc) * 2 * pi * F / SF);
+
+    inc *= 1.00005;
+
     new_atan2 = atan2(left(k), right(k));
     wrapped(k) = new_atan2;
 
@@ -36,10 +39,4 @@ clf
 hold on
 plot(wrapped)
 plot(unwrapped)
-grid on
-
-figure(3)
-clf
-hold on
-plot(wrapped)
 grid on
