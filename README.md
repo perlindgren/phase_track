@@ -33,4 +33,8 @@ Relative position tracking is a common problem:
 
 - Quality assessment and validation against golden model using [csv](https://crates.io/crates/csv).
 
-  Excellent correlation between Rust and octave implementations. [libm](https://crates.io/crates/libm) atan2 claims to produce correct results even for angles near pi/2 or -pi/2 (that is, when x is near 0) and avoids spurious underflows (due fixed precision).
+  Excellent correlation between Rust and octave implementations. [libm](https://crates.io/crates/libm) atan2 claims to produce correct results even for angles near pi/2 or -pi/2 (that is, when x is near 0) and avoids spurious underflows.
+
+## License
+
+This project is dual-licensed under MIT and Apache 2.0.
