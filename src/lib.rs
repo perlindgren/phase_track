@@ -37,11 +37,19 @@ pub fn plot_left_right(left: Vec<f64>, right: Vec<f64>, sf: usize, path: &str) {
     let root_area = SVGBackend::new(path, (600, 400)).into_drawing_area();
     root_area.fill(&WHITE).unwrap();
 
+    let min_left = left.iter().min_by(|a, b| a.total_cmp(b)).unwrap();
+    let min_right = right.iter().min_by(|a, b| a.total_cmp(b)).unwrap();
+    let min = min_left.min(*min_right);
+
+    let max_left = left.iter().max_by(|a, b| a.total_cmp(b)).unwrap();
+    let max_right = right.iter().max_by(|a, b| a.total_cmp(b)).unwrap();
+    let max = max_left.min(*max_right);
+
     let mut ctx = ChartBuilder::on(&root_area)
         .set_label_area_size(LabelAreaPosition::Left, 40)
         .set_label_area_size(LabelAreaPosition::Bottom, 40)
         .caption("left right", ("sans-serif", 40))
-        .build_cartesian_2d(0..sf, -1.0..1.0)
+        .build_cartesian_2d(0..sf, min..max)
         .unwrap();
 
     ctx.configure_mesh().draw().unwrap();
